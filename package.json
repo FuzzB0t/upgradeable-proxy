@@ -11,5 +11,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@synthetixio/core-contracts": "^3.3.19",
+    "@synthetixio/core-modules": "^3.3.19"
+  }
 }

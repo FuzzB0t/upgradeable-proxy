@@ -1,25 +1,26 @@
-//SPDX-License-Identifier: MIT
-pragma solidity >=0.8.11 <0.9.0;
+// SPDX-License-Identifier: MIT
+// Compatible with OpenZeppelin Contracts ^5.0.0
+pragma solidity ^0.8.20;
 
-import "./AbstractProxy.sol";
-import "./ProxyStorage.sol";
-import "./AddressError.sol";
-import "./AddressUtil.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract UUPSProxy is AbstractProxy, ProxyStorage {
-    constructor(address firstImplementation) {
-        if (firstImplementation == address(0)) {
-            revert AddressError.ZeroAddress();
-        }
-
-        if (!AddressUtil.isContract(firstImplementation)) {
-            revert AddressError.NotAContract(firstImplementation);
-        }
-
-        _proxyStore().implementation = firstImplementation;
+/// @custom:security-contact cannon@protonmail.com
+contract UUPSProxy is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
-    function _getImplementation() internal view virtual override returns (address) {
-        return _proxyStore().implementation;
+    function initialize(address initialOwner) initializer public {
+        __Ownable_init(initialOwner);
+        __UUPSUpgradeable_init();
     }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        onlyOwner
+        override
+    {}
 }

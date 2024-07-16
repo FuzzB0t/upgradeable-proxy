@@ -1,6 +1,6 @@
-name = "uups-proxy"
+name = "oz-uups-proxy"
 version = "<%= package.version %>"
-description = "Generic UUPS Proxy package using synthetix's proxy contracts"
+description = "Generic UUPS Proxy package using openzeppelins proxy contracts"
 
 # `salt` here only affects proxy contract
 [setting.salt]
@@ -12,30 +12,29 @@ defaultValue = "main"
 description = "Address of the implementation contract"
 defaultValue = "0x5c3b576B95fb903f022Ce3E33938EB79F69B5745"
 
-[setting.owner]
-description = "Owner user for the proxy"
+[setting.admin]
+description = "Admin user for the system"
 defaultValue = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
 
-[setting.initialCallData]
-defaultValue = "0x"
-
-[deploy.InitialModuleBundle]
-artifact = "InitialModuleBundle"
+[deploy.EmptyContract]
+artifact = "EmptyContract"
 
 [contract.Proxy]
-artifact = "Proxy"
-args = ["<%= contracts.InitialModuleBundle.address %>", "<%= settings.owner %>"]
-abiOf = ["InitialModuleBundle"]
+artifact = "UUPSProxy"
+args = [
+  "<%= contracts.EmptyContract.address %>",
+]
 salt = "<%= settings.salt %>"
 create2 = true
+depends = [ "deploy.EmptyContract" ]
 
 [invoke.upgrade_proxy_implementation]
 target = ["Proxy"]
 fromCall.func = "owner"
-abi = "UpgradeModule"
+abi = "UUPSProxy"
 func = "upgradeTo"
 args = ["<%= settings.implementation %>"]
-factory.UpgradedProxy.abiOf = ["Proxy"]
+factory.UpgradedProxy.abiOf = ["UUPSProxy"]
 factory.UpgradedProxy.event = "Upgraded"
 factory.UpgradedProxy.arg = 0
 factory.UpgradedProxy.highlight = true
